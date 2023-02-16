@@ -197,7 +197,7 @@ export class DVPNSetup {
 								remote_url: 'https://' + globalIP + ':' + port,
 								listen_on: globalIP + ':' + port,
 								moniker: generator({ words: 3 }).dashed,
-								price: '1000000udvpn'
+								price: '7500000ibc/B1C0DDB14F25279A2026BC8794E12B259F8BDA546A3C5132CCAEE4431CE36783,200000000udvpn'
 							}
 						},
 						wireguard: {

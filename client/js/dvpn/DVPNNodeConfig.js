@@ -424,15 +424,10 @@ export class DVPNNodeConfig {
 				type: 'all'
 			},
 			price: {
-				label: 'Price (uDVPN)',
+				label: 'Price (Decentr, uDVPN)',
 				notes: 'Per Gigabyte price to charge against the provided bandwidth. 1,000,000 uDVPN = 1DVPN',
 				type: 'all'
 			},
-			// price_decentr: {
-			// 	label: 'Price (uDecentr)',
-			// 	notes: 'Per Gigabyte price to charge against the provided bandwidth. 1,000,000 uDVPN = 1DVPN',
-			// 	type: 'all'
-			// },
 			remote_url: {
 				label: 'Host Remote URL',
 				notes: 'Your global address, example: sentinel.hopto.org, or 1.23.45.67 <a class="getMyIP">Get My Global IP Address</a> <span class="myIPValue"></span>',
@@ -703,33 +698,20 @@ export class DVPNNodeConfig {
 				}
 				if (configKey == 'price') {
 					//check it has udvpn
-					if (val.toLowerCase().indexOf('udvpn') == -1) {
-						//check first if they put in dvpn
-						if (val.toLowerCase().indexOf('dvpn') == -1) {
-							//ok it needs udvpn then
-							value = val.replace(/\D/g, '') + 'udvpn';
-						}
-						else {
-							//ok lets convert to udvpn;
-							value = (parseFloat(val.replace('dvpn', '').replace(/[^0-9.]+/g, '')) * 1000000) + 'udvpn';
-						}
-					}
-					value = "7500000ibc/B1C0DDB14F25279A2026BC8794E12B259F8BDA546A3C5132CCAEE4431CE36783,200000000udvpn"
+					// if (val.toLowerCase().indexOf('udvpn') == -1) {
+					// 	//check first if they put in dvpn
+					// 	if (val.toLowerCase().indexOf('dvpn') == -1) {
+					// 		//ok it needs udvpn then
+					// 		value = val.replace(/\D/g, '') + 'udvpn';
+					// 	}
+					// 	else {
+					// 		//ok lets convert to udvpn;
+					// 		value = (parseFloat(val.replace('dvpn', '').replace(/[^0-9.]+/g, '')) * 1000000) + 'udvpn';
+					// 	}
+					// }
+					// value = "7500000ibc/B1C0DDB14F25279A2026BC8794E12B259F8BDA546A3C5132CCAEE4431CE36783,200000000udvpn"
+					console.log(value)
 				}
-				// if (configKey == 'price_decentr') {
-				// 	//check it has udvpn
-				// 	if (val.toLowerCase().indexOf('udvpn') == -1) {
-				// 		//check first if they put in dvpn
-				// 		if (val.toLowerCase().indexOf('dvpn') == -1) {
-				// 			//ok it needs udvpn then
-				// 			value = val.replace(/\D/g, '') + 'udvpn';
-				// 		}
-				// 		else {
-				// 			//ok lets convert to udvpn;
-				// 			value = (parseFloat(val.replace('dvpn', '').replace(/[^0-9.]+/g, '')) * 1000000) + 'udvpn';
-				// 		}
-				// 	}
-				// }
 				if (typeof output[topLevelConfig] == "undefined") {
 					output[topLevelConfig] = {};
 				}
