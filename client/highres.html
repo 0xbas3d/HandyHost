@@ -1,0 +1,166 @@
+<html>
+<head>
+	<meta charset="UTF-8">
+	<link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+	<title>HandyHost</title>
+	<link rel="stylesheet" type="text/css" href="./intro/css/main.css" />
+	<link rel="stylesheet" type="text/css" href="./intro/css/appVersionMeta.css" />
+	<script src="./external/Tween.js"></script>
+	<script src="./external/jquery.min.js"></script>
+	<script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+	<div id="appVersionMeta">
+		<ul class="versionInfo">
+			<li class="HandyHost">
+				HandyHost 
+				<span class="version"> ---</span>
+			</li>
+			<li class="DVPN">
+				DVPN 
+				<span class="version"> ---</span>
+			</li>
+			<li class="lowres">
+				<label for="fancyAnimations">Fancy Animations</label> 
+				<input type="checkbox" id="fancyAnimations" />
+			</li>
+		</ul>
+	</div>
+	<div id="introLogo"></div>
+	<script type="module">
+		import {WEBGL} from './external/WEBGL.js';
+		import {CommonUtils} from './js/CommonUtils.js';
+		const utils = new CommonUtils();
+		let doFancyAnimations = window.localStorage.getItem('fancyAnimations');
+		
+		if(doFancyAnimations == 'true'){
+			$('#fancyAnimations').prop('checked',true);
+		}
+		else{
+			$('#fancyAnimations').prop('checked',false);
+		}
+		$('#fancyAnimations').off('change').on('change',()=>{
+			const val = $('#fancyAnimations').is(':checked');
+			window.localStorage.setItem('fancyAnimations',val);
+			if(!val){
+				window.location.href = 'lowres.html';
+			}
+		})
+		function checkUserAgent() {
+		    const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+
+		    if(/Linux aarch64/i.test(userAgent) && !(/Chrome/i.test(userAgent))){
+		    	return false
+		    }
+		    if(/Linux/i.test(userAgent)){
+		    	//seems hit or miss to have a decent GPU/browser webGL impl in linux. 
+		    	return false;
+		    }
+		    if(/X11/i.test(userAgent)){
+		    	return false
+		    }
+
+		    
+		    return true;
+		}
+		if ( ! WEBGL.isWebGLAvailable() ) {
+			console.log("NO WEBGL")
+			window.location.href = './lowres.html'
+		}
+		else{
+			console.log('has webgl support');
+		}
+		if(!checkUserAgent() || doFancyAnimations == 'false'){
+			if(window.localStorage.getItem('fancyAnimations') == null){
+				doFancyAnimations = 'false';
+				window.localStorage.setItem('fancyAnimations',false);
+				$('#fancyAnimations').prop('checked',false);
+			}
+			if(doFancyAnimations == 'false'){
+				//do nothing
+				window.location.href='./lowres.html';
+			}
+			else{
+				//do nothing
+			}
+			
+		}
+		if(checkUserAgent() && doFancyAnimations == null){
+			if(window.localStorage.getItem('fancyAnimations') == null){
+				window.localStorage.setItem('fancyAnimations',true);
+				$('#fancyAnimations').prop('checked',true);
+			}
+			
+		}
+		const logoSentinel = './intro/svg/sentinel.svg';
+		const handyHostLogo = './intro/svg/HandyHost.svg';
+		import {TriangulatedLogo} from './intro/logo-static.js';
+		const app = new TriangulatedLogo();
+
+		let handyHostColSpan = 3,
+		handyHostRowSpan = 4,
+		cols = 3,
+		rows = 5,
+		sentinelRow = 4,
+		sentinelCol = 0,
+		akashRow = 4,
+		akashCol = 1,
+		siaRow = 4,
+		siaCol = 2,
+		handyHostLeftOffset = -0.03,
+		handyHostTopOffset = 0.1;
+
+		if($(window).width() < $(window).height()){
+			handyHostColSpan = 1;
+			handyHostRowSpan = 5;
+			cols = 1;
+			rows = 8;
+			sentinelRow = 5;
+			sentinelCol = 0;
+			akashRow = 6;
+			akashCol = 0;
+			siaRow = 7;
+			siaCol = 0;
+			handyHostLeftOffset = -0.08;
+		}
+
+		const handyHostParams = {
+			type:'static',
+			left:handyHostLeftOffset,
+			top: handyHostTopOffset,
+			cellPos:{
+				cols,
+				rows,
+				rowPos:0,
+				colPos:0,
+				rowSpan:handyHostRowSpan,
+				colSpan:handyHostColSpan
+			},
+			wireframe:false
+		}
+		const sentinelParams = {
+			cellPos:{
+				cols,
+				rows,
+				rowPos:sentinelRow,
+				colPos:sentinelCol
+			},
+			logo: 'Sentinel',
+			easing:TWEEN.Easing.Circular.InOut,
+			wireframe:true,
+			link:'dvpn.html'
+		};
+		
+		
+		app.loadStaticJSONLogo('HandyHost',handyHostParams).then(mesh=>{
+			setTimeout(()=>{
+				app.loadStaticJSONLogo('dvpn',sentinelParams);
+			},500)
+		})
+		
+		utils.getIntroVersionInfo();
+		
+		window.app = app;
+	</script>
+</body>
+</html>

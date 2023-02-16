@@ -2,11 +2,56 @@
 <head>
 	<meta charset="UTF-8">
 	<link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+	<script src="bower_components/jquery/dist/jquery.min.js"></script>
 	<title>HandyHost</title>
-	<link rel="stylesheet" type="text/css" href="./intro/css/main.css" />
 	<link rel="stylesheet" type="text/css" href="./intro/css/appVersionMeta.css" />
-	<script src="./external/Tween.js"></script>
-	<script src="./external/jquery.min.js"></script>
+	<style>
+		body,html{
+			background:#111;
+			padding:0;
+			margin:0;
+			font-family: Helvetica, Arial, Sans-serif;
+		}
+		#handyhost{
+			float:left;
+			width: 100%;
+			height: 80%;
+			text-align: center;
+		}
+		#handyhost img{
+			height: 80%;
+		}
+		#icons{
+			float:left;
+			width: 100%;
+			height: 20%;
+		}
+		#icons a{
+			float:left;
+			width: 33%;
+			height: 100%;
+			text-align:center;
+		}
+		.dvpn img{
+			max-width: 80%;
+			max-height: 90%;
+		}
+		#icons a:hover{
+			background:rgba(200,200,200,0.1);
+		}
+		@media (orientation: portrait) {
+			#handyhost{
+				height: 60%;
+			}
+			#icons{
+				height: 40%;
+			}
+			#icons a{
+				width: 100%;
+				height: 33%;
+			}
+		}
+	</style>
 	<script src="/socket.io/socket.io.js"></script>
 </head>
 <body>
@@ -16,189 +61,42 @@
 				HandyHost 
 				<span class="version"> ---</span>
 			</li>
-			<li class="Akash">
-				Akash 
-				<span class="version"> ---</span>
-			</li>
-			<li class="Sia">
-				Sia 
-				<span class="version"> ---</span>
-			</li>
 			<li class="DVPN">
 				DVPN 
 				<span class="version"> ---</span>
 			</li>
-			<li class="lowres">
-				<label for="fancyAnimations">Fancy Animations</label> 
-				<input type="checkbox" id="fancyAnimations" />
-			</li>
 		</ul>
 	</div>
-	<div id="introLogo"></div>
-	<script type="module">
-		import {WEBGL} from './external/WEBGL.js';
-		import {CommonUtils} from './js/CommonUtils.js';
-		const utils = new CommonUtils();
-		let doFancyAnimations = window.localStorage.getItem('fancyAnimations');
+	
+	<div id="handyhost">
+		<img src="./intro/svg/HandyHost.svg" />
+	</div>
+	<div id="icons">
+		<a class="dvpn" href="./dvpn.html">
+			<img src="./intro/svg/sentinel.svg" />
+		</a>
+	</div>
+	<script>
+		function doResize($this,target){
+			const h = $(target).height();
+			const imgH = $this.height();
+			const marginTop = Math.abs(h - imgH);
+			$this.css('margin-top',marginTop / 2);
+		}
 		
-		if(doFancyAnimations == 'true'){
-			$('#fancyAnimations').prop('checked',true);
-		}
-		else{
-			$('#fancyAnimations').prop('checked',false);
-		}
-		$('#fancyAnimations').off('change').on('change',()=>{
-			const val = $('#fancyAnimations').is(':checked');
-			window.localStorage.setItem('fancyAnimations',val);
-			if(!val){
-				window.location.href = 'lowres.html';
-			}
+		$('#icons img').on('load',function(){
+			doResize($(this),'#icons a');
 		})
-		function checkUserAgent() {
-		    const userAgent = navigator.userAgent || navigator.vendor || window.opera;
-
-		    if(/Linux aarch64/i.test(userAgent) && !(/Chrome/i.test(userAgent))){
-		    	return false
-		    }
-		    if(/Linux/i.test(userAgent)){
-		    	//seems hit or miss to have a decent GPU/browser webGL impl in linux. 
-		    	return false;
-		    }
-		    if(/X11/i.test(userAgent)){
-		    	return false
-		    }
-
-		    
-		    return true;
-		}
-		if ( ! WEBGL.isWebGLAvailable() ) {
-			console.log("NO WEBGL")
-			window.location.href = './lowres.html'
-		}
-		else{
-			console.log('has webgl support');
-		}
-		if(!checkUserAgent() || doFancyAnimations == 'false'){
-			if(window.localStorage.getItem('fancyAnimations') == null){
-				doFancyAnimations = 'false';
-				window.localStorage.setItem('fancyAnimations',false);
-				$('#fancyAnimations').prop('checked',false);
-			}
-			if(doFancyAnimations == 'false'){
-				//do nothing
-				window.location.href='./lowres.html';
-			}
-			else{
-				//do nothing
-			}
+		$('#handyhost img').on('load',function(){
+			doResize($(this),'#handyhost');
 			
-		}
-		if(checkUserAgent() && doFancyAnimations == null){
-			if(window.localStorage.getItem('fancyAnimations') == null){
-				window.localStorage.setItem('fancyAnimations',true);
-				$('#fancyAnimations').prop('checked',true);
-			}
-			
-		}
-		const logoAkash = './intro/svg/akash.svg';
-		const logoSentinel = './intro/svg/sentinel.svg';
-		const logoSia = './intro/svg/sia.svg';
-		const handyHostLogo = './intro/svg/HandyHost.svg';
-		import {TriangulatedLogo} from './intro/logo-static.js';
-		const app = new TriangulatedLogo();
-
-		let handyHostColSpan = 3,
-		handyHostRowSpan = 4,
-		cols = 3,
-		rows = 5,
-		sentinelRow = 4,
-		sentinelCol = 0,
-		akashRow = 4,
-		akashCol = 1,
-		siaRow = 4,
-		siaCol = 2,
-		handyHostLeftOffset = -0.03,
-		handyHostTopOffset = 0.1;
-
-		if($(window).width() < $(window).height()){
-			handyHostColSpan = 1;
-			handyHostRowSpan = 5;
-			cols = 1;
-			rows = 8;
-			sentinelRow = 5;
-			sentinelCol = 0;
-			akashRow = 6;
-			akashCol = 0;
-			siaRow = 7;
-			siaCol = 0;
-			handyHostLeftOffset = -0.08;
-		}
-
-		const handyHostParams = {
-			type:'static',
-			left:handyHostLeftOffset,
-			top: handyHostTopOffset,
-			cellPos:{
-				cols,
-				rows,
-				rowPos:0,
-				colPos:0,
-				rowSpan:handyHostRowSpan,
-				colSpan:handyHostColSpan
-			},
-			wireframe:false
-		}
-		const sentinelParams = {
-			cellPos:{
-				cols,
-				rows,
-				rowPos:sentinelRow,
-				colPos:sentinelCol
-			},
-			logo: 'Sentinel',
-			easing:TWEEN.Easing.Circular.InOut,
-			wireframe:true,
-			link:'dvpn.html'
-		};
-		const akashParams = {
-			cellPos:{
-				cols,
-				rows,
-				rowPos:akashRow,
-				colPos:akashCol
-			},
-			logo: 'Akash',
-			easing:TWEEN.Easing.Circular.InOut,
-			wireframe:true,
-			link:'akt.html'
-		};
-		const siaParams = {
-			cellPos:{
-				cols,
-				rows,
-				rowPos:siaRow,
-				colPos:siaCol
-			},
-			padding: 9.0,
-			logo: 'Sia',
-			easing:TWEEN.Easing.Circular.InOut,
-			wireframe:true,
-			link:'sia.html'
-		};
-		
-		
-		
-		app.loadStaticJSONLogo('HandyHost',handyHostParams).then(mesh=>{
-			setTimeout(()=>{
-				app.loadStaticJSONLogo('dvpn',sentinelParams);
-				app.loadStaticJSONLogo('akt',akashParams);
-				app.loadStaticJSONLogo('sc',siaParams);
-			},500)
 		})
-		
-		utils.getIntroVersionInfo();
-		
-		window.app = app;
+		$(window).on('resize',()=>{
+			$('#icons img').each(function(){
+				doResize($(this),'#icons a');
+			})
+			doResize($('#handyhost img'),'#handyhost');
+		})
 	</script>
 </body>
 </html>
