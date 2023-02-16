@@ -111,7 +111,7 @@ fi
 
 sudo chown -R "$USERNAME:$USERGROUP" $USERHOME/.HandyHost && \
 
-echo -e "########## \x1b[92mInstalling Sia\x1b[0m ##########" && \
+echo -e "########## \x1b[92mInstalling Go\x1b[0m ##########" && \
 
 
 cd $USERHOME/.HandyHost && \
@@ -124,25 +124,13 @@ if [[ ! -s "/usr/local/go" ]] ; then
 else
   echo "Go already installed"
 fi
-export PATH=$PATH:/usr/local/go/bin && \
-if [[ ! -d "$USERHOME/.HandyHost/siaRepo" ]] ; then
-
- 	mkdir -p $USERHOME/.HandyHost/siaRepo && \
-	git clone https://github.com/SiaFoundation/siad $USERHOME/.HandyHost/siaRepo 
-else
-	cd $USERHOME/.HandyHost/siaRepo && \
-	git fetch --all && \
-	git pull
-fi
+export PATH=$PATH:/usr/local/go/bin
 
 #export GOPATH="$USERHOME/go"
 if [ $USERNAME = "root" ] ; then
   export PATH=$PATH:/usr/local/go/bin:${USERHOME}/go/bin
   source $profile_file && \
-  export HOME="$USERHOME" && \
-  cd $USERHOME/.HandyHost/siaRepo && make dependencies && make
-else
-  su - $USERNAME -c "cd $USERHOME/.HandyHost/siaRepo && make dependencies && make"
+  export HOME="$USERHOME"
 fi
 
 if ! grep -q "${USERHOME}/go/bin" "${profile_file}" ; then
@@ -196,90 +184,10 @@ else
 fi
 
 
-echo -e "########## \x1b[92mInstalling Akash\x1b[0m ##########" && \
-
-LATEST_KUBESPRAY=$(jq -r 'map(select(.prerelease != true)) | first | .tag_name' <<< $(curl --silent "https://api.github.com/repos/kubernetes-sigs/kubespray/releases"))
-
-cd $pwd/aktAPI && \
-if [[ ! -d ${USERHOME}/.HandyHost/aktData/kubespray ]] ; then
-  mkdir -p ${USERHOME}/.HandyHost/aktData/kubespray && \
-  cd ${USERHOME}/.HandyHost/aktData/kubespray && \
-  git clone https://github.com/kubernetes-sigs/kubespray.git . && \
-  git checkout "$LATEST_KUBESPRAY" && \
-  virtualenv --python=python3 venv && \
-  . venv/bin/activate && \
-  pip3 install -r requirements.txt
-else
-  echo "kubespray already installed, check for updates" && \
-  cd ${USERHOME}/.HandyHost/aktData/kubespray && \
-  git fetch --all && \
-  LOCAL_KUBESPRAY=$(git describe --tags)
-
-  if [[ "$LOCAL_KUBESPRAY" == "$LATEST_KUBESPRAY" ]]; then
-    echo "Kubespray is up to date"
-  else
-    echo "kubespray is out of date, updating" && \
-    git fetch --all && \
-    git checkout "$LATEST_KUBESPRAY" && \
-    virtualenv --python=python3 venv && \
-    . venv/bin/activate && \
-    pip3 uninstall -y ansible && \
-    pip3 install -r requirements.txt
-  fi
-fi
-
-if [[ ! -d ${USERHOME}/.HandyHost/aktData/ubuntu-autoinstall-generator ]] ; then
-  echo "installing ubuntu-autoinstall-generator"
-  cd ${USERHOME}/.HandyHost/aktData && \
-  git clone https://github.com/covertsh/ubuntu-autoinstall-generator.git && \
-  cd ubuntu-autoinstall-generator && \
-  chmod +x ubuntu-autoinstall-generator.sh
-else
-  echo "check for ubuntu-autoinstall-generator updates"
-  cd ${USERHOME}/.HandyHost/aktData/ubuntu-autoinstall-generator && \
-  git fetch && \
-  LOCAL=$(git rev-parse @)
-  REMOTE=$(git rev-parse @{u})
-  BASE=$(git merge-base @ @{u})
-
-  if [[ "$LOCAL" == "$REMOTE" ]]; then
-    echo "ubuntu-autoinstall-generator is up to date"
-  else
-    echo "ubuntu-autoinstall-generator is out of date, updating" && \
-    git pull origin master
-    chmod +x ubuntu-autoinstall-generator.sh
-  fi
-  
-fi
-
-export AKASH_NET="https://raw.githubusercontent.com/ovrclk/net/master/mainnet"
-export AKASH_VERSION=$(/bin/bash "$pwd/aktAPI/getAkashLatestVersion.sh")
-export AKASH_CHAIN_ID="$(curl -s "$AKASH_NET/chain-id.txt")"
-export AKASH_NODE="$(curl -s "$AKASH_NET/rpc-nodes.txt" | shuf -n 1)"
-
-cd ${USERHOME}/.HandyHost/aktData && \
-
-if [[ ! -d "${USERHOME}/.HandyHost/aktData/akashRepo" ]] ; then
-  mkdir -p "${USERHOME}/.HandyHost/aktData/akashRepo" && \
-  cd "${USERHOME}/.HandyHost/aktData/akashRepo" && \
-  git clone https://github.com/ovrclk/akash.git . && \
-  git checkout "$AKASH_VERSION"
-else
-  cd "${USERHOME}/.HandyHost/aktData/akashRepo" && \
-  git fetch --all && \
-  git checkout "$AKASH_VERSION"
-fi
-
-chown -R "$USERNAME:$USERGROUP" "${USERHOME}/.HandyHost/aktData/akashRepo" && \
-
-echo "installing Akash software..." && \
-cd ${USERHOME}/.HandyHost/aktData && \
-curl https://raw.githubusercontent.com/ovrclk/akash/master/godownloader.sh | sh -s -- "$AKASH_VERSION"
-
 echo -e "########## \x1b[92mDONE INSTALLING!\x1b[0m ##########" && \
 cd $pwd && \
 nvm use && \
-sudo chown -R "$USERNAME:$USERGROUP" $USERHOME/go && \
+sudo chown -R "$USERNAME:$USERGROUP" /usr/local/go && \
 sudo chown -R "$USERNAME:$USERGROUP" $pwd && \
 sudo chown -R "$USERNAME:$USERGROUP" $USERHOME/.HandyHost && \
 

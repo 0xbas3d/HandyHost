@@ -22,26 +22,10 @@ moveDaemonKey(){
 }
 
     
-moveDaemonKey "sc"
-moveDaemonKey "akt"
 moveDaemonKey "dvpn"
 
 
 ENVS="HANDYHOST_BOOTSTRAPPED=true"
-if [[ -s $ROOTHOME/.handy/sc ]] ; then
-    SCLOC=$(uuidgen)
-    echo "$(openssl rsautl -inkey $ROOTHOME/.handy/handyhost.key -decrypt -in $ROOTHOME/.handy/sc)" | openssl rsautl -pubin -inkey $USERHOME/.HandyHost/keystore/handyhost.pub -encrypt -pkcs -out "$USERHOME/.HandyHost/keystore/$SCLOC"
-    chown "$USER:$USERGROUP" $USERHOME/.HandyHost/keystore/$SCLOC && \
-    chmod 0600 $USERHOME/.HandyHost/keystore/$SCLOC
-    ENVS+=" SCAUTO=$SCLOC"
-fi
-if [[ -s $ROOTHOME/.handy/akt ]] ; then
-    AKTLOC=$(uuidgen)
-    echo "$(openssl rsautl -inkey $ROOTHOME/.handy/handyhost.key -decrypt -in $ROOTHOME/.handy/akt)" | openssl rsautl -pubin -inkey $USERHOME/.HandyHost/keystore/handyhost.pub -encrypt -pkcs -out "$USERHOME/.HandyHost/keystore/$AKTLOC"
-    chown "$USER:$USERGROUP" $USERHOME/.HandyHost/keystore/$AKTLOC && \
-    chmod 0600 $USERHOME/.HandyHost/keystore/$AKTLOC
-    ENVS+=" AKTAUTO=$AKTLOC"
-fi
 if [[ -s $ROOTHOME/.handy/dvpn ]] ; then
     DVPNLOC=$(uuidgen)
     echo "$(openssl rsautl -inkey $ROOTHOME/.handy/handyhost.key -decrypt -in $ROOTHOME/.handy/dvpn)" | openssl rsautl -pubin -inkey $USERHOME/.HandyHost/keystore/handyhost.pub -encrypt -pkcs -out "$USERHOME/.HandyHost/keystore/$DVPNLOC"
