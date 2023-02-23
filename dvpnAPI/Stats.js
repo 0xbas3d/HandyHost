@@ -129,16 +129,16 @@ export class DVPNStats {
 			const options = {
 				host: '144.126.240.160',
 				port: '1317',
-				path: '/v1/account/total/balance/' + address,
+				path: '/cosmos/bank/v1beta1/balances/' + address,
 				method: 'GET',
 				rejectUnauthorized: true,
-				requestCert: true,
+				// requestCert: true,
 				agent: false
 			};
 
 
 			let output = '';
-			const request = https.request(options, response => {
+			const request = http.request(options, response => {
 				//another chunk of data has been received, so append it to `str`
 
 				response.on('data', (chunk) => {
@@ -147,7 +147,7 @@ export class DVPNStats {
 
 				//the whole response has been received, so we just print it out here
 				response.on('end', () => {
-					console.log('resp', output);
+					console.log('resp to walt balance', output);
 					let json = [];
 					try {
 						json = JSON.parse(output);
@@ -167,6 +167,7 @@ export class DVPNStats {
 			});
 
 			request.on('error', (err) => {
+				console.log("error on requrst", err)
 				reject(err)
 			});
 			request.end();
@@ -178,16 +179,17 @@ export class DVPNStats {
 			const options = {
 				host: '144.126.240.160',
 				port: '1317',
-				path: '/v1/account/new_txs/' + address + '?from=0&limit=50',
+				// path: '/v1/account/new_txs/' + address + '?from=0&limit=50',
+				path: '/cosmos/bank/v1beta1/balances/' + address,
 				method: 'GET',
 				rejectUnauthorized: true,
-				requestCert: true,
+				// requestCert: true,
 				agent: false
 			};
 
 
 			let output = '';
-			const request = https.request(options, response => {
+			const request = http.request(options, response => {
 				//another chunk of data has been received, so append it to `str`
 
 				response.on('data', (chunk) => {
@@ -263,7 +265,8 @@ export class DVPNStats {
 				finish(output, resolve);
 			})
 			this.getWalletBalance(walletAddress).then(json => {
-				output.balance = json;
+				output.balance = json["balances"][0];
+				console.log("wallet balance", output)
 
 				hasCompleted++;
 				finish(output, resolve);
@@ -275,7 +278,9 @@ export class DVPNStats {
 			});
 
 			this.getWalletTransactions(walletAddress).then(json => {
-				output.txes = json;
+				// output.txes = json;
+				// TODO: Update this with get recent wallet transactions
+				output.txes = [];
 				console.log('got tx data');
 				hasCompleted++;
 				finish(output, resolve);

@@ -38,8 +38,8 @@ export class DVPNSetup {
 				output += d.toString();
 			})
 			s.stderr.on('data', d => {
-				//console.log('stderr',d.toString());
-				//reject({'error':d.toString()})
+				// console.log('stderr', d.toString());
+				// reject({'error':d.toString()})
 				stderrOutput += d.toString();
 			})
 			s.stdin.end();
@@ -76,10 +76,10 @@ export class DVPNSetup {
 			//const s = spawn('bash',args,{shell:true,env:process.env,cwd:process.env.PWD});
 			s.stdout.on('data', d => {
 				output += d.toString();
-				//console.log('stdout',d.toString());
+				// console.log('stdout', d.toString());
 			})
 			s.stderr.on('data', d => {
-				//console.log('stderr',d.toString());
+				// console.log('stderr', d.toString());
 				stderrOutput += d.toString();
 				//reject({'error':d.toString()})
 			})

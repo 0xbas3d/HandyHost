@@ -1,92 +1,91 @@
-import {StreamGraph} from '../charts/StreamGraph.js';
-import {DonutChart} from '../charts/DonutChart.js';
+import { StreamGraph } from '../charts/StreamGraph.js';
+import { DonutChart } from '../charts/DonutChart.js';
 
-export class DVPNDashboardAnalytics{
-	constructor(parentComponent){
+export class DVPNDashboardAnalytics {
+	constructor(parentComponent) {
 		this.parentComponent = parentComponent;
-		
+
 	}
-	renderAnalytics(data){
+	renderAnalytics(data) {
 		const analytics = data.analytics;
 		const balance = data.balance;
 		const addressMeta = data.wallet;
 		let node = data.node;
-		console.log('data IN',data);
+		console.log('data IN', data);
 		let isConnected = true;
-		if(Object.keys(data.node).length == 0){
+		if (Object.keys(data.node).length == 0) {
 			isConnected = false;
 			node = {
-				result:{
+				result: {
 					moniker: '<div class="monikerWrap"><span class="warningEmoji">⚠️</span> Node Offline</div>',
-					offline:true,
-					bandwidth:{
-						upload:'---',
-						download:'---'
+					offline: true,
+					bandwidth: {
+						upload: '---',
+						download: '---'
 					},
-					price:'---',
-					address:'---',
-					operator:'---',
-					peers:0
+					price: '---',
+					address: '---',
+					operator: '---',
+					peers: 0
 				}
 			}
 		}
 		this.parentComponent.nodeStatus.setStatus(isConnected);
 		$('.analyticsPanel').removeClass('loading');
-		this.renderNodeAnalytics(node.result,balance,analytics,addressMeta,data.activeSessions,data.sessions);
-		this.renderSessionsRealtime(data.activeSessions,data.sessions);
+		this.renderNodeAnalytics(node.result, balance, analytics, addressMeta, data.activeSessions, data.sessions);
+		this.renderSessionsRealtime(data.activeSessions, data.sessions);
 		this.streamGraph = new StreamGraph($('#streamgraph'));
 		this.streamGraph.render(data.timeseries);
 
 		let timeout;
-		$(window).off('resize').on('resize',()=>{
-			if(typeof timeout != "undefined"){
+		$(window).off('resize').on('resize', () => {
+			if (typeof timeout != "undefined") {
 				clearTimeout(timeout);
 			}
-			timeout = setTimeout(()=>{
+			timeout = setTimeout(() => {
 				this.streamGraph.resize();
 				this.resizeDonuts();
 				delete this.timeout;
-			},80)
+			}, 80)
 		})
 	}
-	renderNodeAnalytics(node,balance,analytics,addressMeta,sessionMeta,allSessionsMeta){
-		console.log('node data',node);
+	renderNodeAnalytics(node, balance, analytics, addressMeta, sessionMeta, allSessionsMeta) {
+		console.log('node data', node);
 		const bandwidth = node.bandwidth;
 		const moniker = node.moniker;
 		let price;
-		if(node.offline){
+		if (node.offline) {
 			price = '---'
 		}
-		else{
-			price = node.price.replace('udvpn',' udvpn');
+		else {
+			price = node.price.replace('udvpn', ' udvpn');
 		}
 
 
 		const sessions = node.peers;
 		const nodeAddress = node.address;
 		const walletAddress = node.operator;
-		if(typeof balance.available == "undefined"){
+		console.log("typeof balance", balance)
+		if (typeof balance.amount == "undefined") {
 			balance = {
-				available:{
-					denom:'udvpn',
-					amount:0
-				}
+				denom: 'udvpn',
+				amount: 0
 			}
-		}	
-		let walletBalance = balance.available.amount + ' ' + balance.available.denom.toUpperCase();
-		
+		}
+		let walletBalance = balance.amount + ' ' + balance.denom.toUpperCase();
+
 		let balanceInDVPN = 0;
-		if(balance.available.denom == 'udvpn'){
+		if (balance.denom == 'udvpn') {
 			//make dvpn
-			walletBalance = Math.floor(balance.available.amount/10000) / 100 + ' DVPN';
-			balanceInDVPN = Math.floor(balance.available.amount/10000) / 100
+			walletBalance = Math.floor(balance.amount / 10000) / 100 + ' DVPN';
+			balanceInDVPN = Math.floor(balance.amount / 10000) / 100
 		}
 		const $el = $('#nodeMeta');
 		$el.html(`<div class="title">
 			${moniker}
 		</div>`)
-		$('.monikerWrap',$el).off('click').on('click',()=>{
-			if(node.offline){
+		$('.monikerWrap', $el).off('click').on('click', () => {
+			if (node.offline) {
 				this.parentComponent.nodeConfig.hide();
 				this.parentComponent.nodeStatus.show();
 				this.parentComponent.hide();
@@ -103,48 +102,48 @@ export class DVPNDashboardAnalytics{
 
 		$info.append(`
 			<div class="bandwidth">
-				<span>Download Speed:</span> ${numeral(node.bandwidth.download*8).format('0.00b').toUpperCase()}
-				<span>Upload Speed:</span> ${numeral(node.bandwidth.upload*8).format('0.00b').toUpperCase()}
+				<span>Download Speed:</span> ${numeral(node.bandwidth.download * 8).format('0.00b').toUpperCase()}
+				<span>Upload Speed:</span> ${numeral(node.bandwidth.upload * 8).format('0.00b').toUpperCase()}
 			</div>`)
-		
+
 		$info.append(`<div class="price"><span>Price (GB):</span> ${price.toUpperCase()}</div>`);
 		$info.append(`<div class="sessions"><span>Connected Sessions:</span> ${sessions}</div>`);
-		if(balanceInDVPN < 50){
+		if (balanceInDVPN < 50) {
 			$info.append('<div class="balanceNote">Note: You will incur regular transaction fees while keeping your dvpn-node online. We recommend keeping at least 50 DVPN in your wallet for fees.</div>')
-			
+
 		}
-		if(balanceInDVPN == 0){
-			$('.balanceNote',$info).html(`
+		if (balanceInDVPN == 0) {
+			$('.balanceNote', $info).html(`
 				Warning: You must have DVPN in your wallet to cover transaction fees. 
 				<br />Please deposit at least 50DVPN in this wallet.
 			`)
 			$('#nodeStatusInfo .balanceNote').show()
 		}
-		else{
+		else {
 			$('#nodeStatusInfo .balanceNote').hide()
 		}
-		this.renderAnalyticsPanel(analytics,sessionMeta,allSessionsMeta,sessionMeta);
+		this.renderAnalyticsPanel(analytics, sessionMeta, allSessionsMeta, sessionMeta);
 	}
-	renderAnalyticsPanel(analytics,sessionMeta,allSessionsMeta,subscriberData){
+	renderAnalyticsPanel(analytics, sessionMeta, allSessionsMeta, subscriberData) {
 		//console.log('analytics',analytics);
 		let updatedAt = {};
-		subscriberData.map(subscriber=>{
-			
-			const updatedMins = moment().diff(moment(subscriber.latestUpdated),'minutes');
-			const humanizedUpdated = moment.duration(updatedMins,'minutes').humanize();
+		subscriberData.map(subscriber => {
+
+			const updatedMins = moment().diff(moment(subscriber.latestUpdated), 'minutes');
+			const humanizedUpdated = moment.duration(updatedMins, 'minutes').humanize();
 			const subID = subscriber.subscription;
 			updatedAt[subID] = humanizedUpdated;
 		})
-		if(typeof analytics == "undefined"){
+		if (typeof analytics == "undefined") {
 			analytics = {
-				avgDuration:0,
-				durationSum:0
+				avgDuration: 0,
+				durationSum: 0
 			}
 		}
 		/*const avgDuration = Math.floor(analytics.avgDuration*100)/100;
 		const sumDuration = Math.floor(analytics.durationSum*100)/100;*/
 		let sessionCount = 0;//analytics.sessionCount;
-		
+
 
 		let totalBandwidthDown = 0;//analytics.totalBandwidthDOWN;
 		let totalBandwidthUp = 0;//analytics.totalBandwidthUP;
@@ -157,7 +156,7 @@ export class DVPNDashboardAnalytics{
 		let subscriptionCount = 0;//Object.keys(analytics.uniqueSubscriptions).length;
 		const uniqueSubs = allSessionsMeta; //analytics.uniqueSubscriptions;
 
-		Object.keys(allSessionsMeta).map(sid=>{
+		Object.keys(allSessionsMeta).map(sid => {
 			const data = allSessionsMeta[sid];
 			sessionCount += data.sessions;
 			subscriptionCount += 1;
@@ -165,10 +164,10 @@ export class DVPNDashboardAnalytics{
 			totalBandwidthUp += data.totalUp;
 			totalRemaining += data.remaining;
 		});
-		if(totalRemaining < 0){
+		if (totalRemaining < 0) {
 			totalRemaining = 0;
 		}
-		
+
 		const $nodeAnalytics = $('#nodeAnalytics');
 		$nodeAnalytics.html('<div class="sectionTitle">Session Analytics</div>')
 		const $subscriptionAnalytics = $('#subscriptionAnalytics');
@@ -197,15 +196,15 @@ export class DVPNDashboardAnalytics{
 			</div>
 		`);
 		let donuts = [];
-		Object.keys(uniqueSubs).map(subKey=>{
+		Object.keys(uniqueSubs).map(subKey => {
 			const sub = uniqueSubs[subKey];
-			
-			let seenAt = moment.duration(moment().diff(moment(sub.lastSeen,'X'),'minutes'),'minutes').humanize()
-			if(typeof updatedAt[subKey] != "undefined"){
+
+			let seenAt = moment.duration(moment().diff(moment(sub.lastSeen, 'X'), 'minutes'), 'minutes').humanize()
+			if (typeof updatedAt[subKey] != "undefined") {
 				seenAt = updatedAt[subKey];
 			}
 			let remaining = numeral(sub.remaining).format('0.00b').toUpperCase();
-			if(sub.remaining < 0){
+			if (sub.remaining < 0) {
 				remaining = '0.00B';
 			}
 			const $li = $(`
@@ -224,88 +223,88 @@ export class DVPNDashboardAnalytics{
 					</div>
 				</li>
 			`)
-			$('ul',$subs).append($li);
-			const $donutEl = $('.donut',$li);
-			
+			$('ul', $subs).append($li);
+			const $donutEl = $('.donut', $li);
+
 			const donut = new DonutChart($donutEl);
-			let totalUsed = (sub.totalDown+sub.totalUp);
-			if(totalUsed > sub.totalContract){
+			let totalUsed = (sub.totalDown + sub.totalUp);
+			if (totalUsed > sub.totalContract) {
 				totalUsed = sub.totalContract
 			}
 			const donutData = [
-				{name:'Bandwidth Used',value: totalUsed, formatted: numeral(totalUsed).format('0.00b').toUpperCase()},
-				{name:'Remaining',value:sub.totalContract, formatted: numeral(sub.remaining).format('0.00b').toUpperCase()}
+				{ name: 'Bandwidth Used', value: totalUsed, formatted: numeral(totalUsed).format('0.00b').toUpperCase() },
+				{ name: 'Remaining', value: sub.totalContract, formatted: numeral(sub.remaining).format('0.00b').toUpperCase() }
 			];
 
 			donuts.push({
-				$el:$li,
+				$el: $li,
 				donut,
-				subscriberID:subKey,
-				data:donutData,
+				subscriberID: subKey,
+				data: donutData,
 				ogData: JSON.parse(JSON.stringify(donutData))
 			})
 		})
-		
-		
+
+
 
 		//$nodeAnalytics.html($durations)
 		$nodeAnalytics.html($sessions);
 		$subscriptionAnalytics.html($subs);
-		donuts.map(donutWidget=>{
+		donuts.map(donutWidget => {
 			const $li = donutWidget.$el;
 			const donut = donutWidget.donut;
 			const donutData = donutWidget.data;
-			const w = $('.donut',$li).width();
-			console.log('donut w',w);
-			$('.donut',$li).css('height',w); //sqaure it up
-			
+			const w = $('.donut', $li).width();
+			console.log('donut w', w);
+			$('.donut', $li).css('height', w); //sqaure it up
+
 			donut.render(donutData);
 		})
 		this.donuts = donuts;
 	}
-	resizeDonuts(){
+	resizeDonuts() {
 		const donuts = this.donuts;
-		donuts.map(donutWidget=>{
+		donuts.map(donutWidget => {
 			const $li = donutWidget.$el;
 			const donut = donutWidget.donut;
 			//const donutData = JSON.parse(JSON.stringify(donutWidget.data));
 			const donutData = JSON.parse(JSON.stringify(donutWidget.ogData));
-			const w = $('.donut',$li).width();
-			console.log('donut w',w);
-			$('.donut',$li).css('height',w); //sqaure it up
+			const w = $('.donut', $li).width();
+			console.log('donut w', w);
+			$('.donut', $li).css('height', w); //sqaure it up
 			donut.render(donutData);
 		})
 	}
-	renderSessionsRealtime(data,sessions){
+	renderSessionsRealtime(data, sessions) {
 		const $el = $('#sessionMeta');
 		$el.html('<div class="sectionTitle">Active Sessions</div>')
-		if(data.length == 0){
+		if (data.length == 0) {
 			$el.append('<div class="nosessions">(no active sessions)</div>')
 		}
-		else{
-			this.renderAnalyticsPanel(undefined,undefined,sessions,data);
+		else {
+			this.renderAnalyticsPanel(undefined, undefined, sessions, data);
 			const $ul = $('<ul />');
 
-			data.map(subscriber=>{
-				const mins = moment().diff(moment(subscriber.latestCreated),'minutes');
-				const humanizedCreated = moment.duration(mins,'minutes').humanize();
-				
-				const updatedMins = moment().diff(moment(subscriber.latestUpdated),'minutes');
-				const humanizedUpdated = moment.duration(updatedMins,'minutes').humanize();
+			data.map(subscriber => {
+				const mins = moment().diff(moment(subscriber.latestCreated), 'minutes');
+				const humanizedCreated = moment.duration(mins, 'minutes').humanize();
+
+				const updatedMins = moment().diff(moment(subscriber.latestUpdated), 'minutes');
+				const humanizedUpdated = moment.duration(updatedMins, 'minutes').humanize();
 				let labelExtra = '';
 				let sessionIDs = subscriber.sessionIDs.join(',')
-				if(subscriber.sessionIDs.length > 1){
+				if (subscriber.sessionIDs.length > 1) {
 					labelExtra = 's';
 				}
 				let uploadVol = subscriber.nodeUP;
 				let downloadVol = subscriber.nodeDOWN;
 				let avail = subscriber.subscriptionAvail;
 				let sessionID = subscriber.sessionIDs.slice(-1);
-				if(typeof sessions[subscriber.subscription] != "undefined"){
+				if (typeof sessions[subscriber.subscription] != "undefined") {
 					uploadVol = sessions[subscriber.subscription].totalUp;
 					downloadVol = sessions[subscriber.subscription].totalDown;
 					avail = sessions[subscriber.subscription].totalContract - (uploadVol + downloadVol);
-					if(avail < 0){
+					if (avail < 0) {
 						avail = 0;
 					}
 				}
