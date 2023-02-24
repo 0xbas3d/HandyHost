@@ -1,5 +1,7 @@
 ## HandyHost
 
+Join the community on the [Telegram group](https://t.me/handycomm)
+
 **[HandyHost v0.5.5 Akash Major Release v0.16.x upgrade instructions](#announcement_v055)** 
 
 **HandyHost is currently in a Beta release state as of 10/05/2021, version 0.4.5**
