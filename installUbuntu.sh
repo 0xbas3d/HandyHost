@@ -146,12 +146,12 @@ fi
 echo -e "########## \x1b[92mInstalling DVPN\x1b[0m ##########" && \
 
 cd $pwd/dvpnAPI && \
-# if ! command -v docker &> /dev/null 
-# then
-#     # Install Docker
-#     curl -fsSL get.docker.com -o ${USERHOME}/get-docker.sh && \
-#     sudo sh ${USERHOME}/get-docker.sh
-# fi
+if ! command -v docker &> /dev/null 
+then
+    # Install Docker
+    curl -fsSL get.docker.com -o ${USERHOME}/get-docker.sh && \
+    sudo sh ${USERHOME}/get-docker.sh
+fi
 export HOME=$USERHOME
 echo "Setting up Docker nosudo" && \
 sudo groupadd docker || true && \

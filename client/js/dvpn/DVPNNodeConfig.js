@@ -397,8 +397,23 @@ export class DVPNNodeConfig {
 				notes: 'Example: sentinel-turing-4, or sentinelhub-2',
 				type: 'advanced'
 			},
-			rpc_address: {
-				label: 'RPC Address',
+			rpc_addresses: {
+				label: 'RPC Addresses',
+				notes: '',
+				type: 'advanced'
+			},
+			rpc_query_timeout: {
+				label: 'RPC Query Timeout',
+				notes: '',
+				type: 'advanced'
+			},
+			rpc_tx_timeout: {
+				label: 'RPC Tx Timeout',
+				notes: '',
+				type: 'advanced'
+			},
+			ipv4_address: {
+				label: 'IPv4 Address',
 				notes: '',
 				type: 'advanced'
 			},
