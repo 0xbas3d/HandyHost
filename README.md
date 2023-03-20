@@ -2,14 +2,23 @@
 
 Join the community on the [Telegram group](https://t.me/handycomm)
 
-**[HandyHost v0.5.5 Akash Major Release v0.16.x upgrade instructions](#announcement_v055)** 
+### Installation
+```
+sudo apt update
+sudo apt upgrade
+sudo apt install make systemd-container
+git clone https://github.com/0xbas3d/HandyHost
+cd HandyHost
+bash installUbuntu.sh
+sudo ./localdev_bootstrap.sh
+# App accessible at http://localhost:8008
+# Logs available at /root/.HandyHost/localdev.log
+```
 
-**HandyHost is currently in a Beta release state as of 10/05/2021, version 0.4.5**
+**This is a fork of HandyHost currently maintained only for DVPN. For the original repo click [here](https://github.com/HandyOSS/HandyHost)**
 
 HandyHost is a modern cryptocurrency "mining" software which allows you to monetize off-the-shelf hardware for passive income all while providing real utility to users versus just minting monies. Currently there are 3 main distributed-web utility blockchains that we implement within HandyHost. 
 1. DVPN - [Sentinel](https://sentinel.co/dvpn) ($DVPN) (as the name suggests) is decentralized VPN. You rent your extra bandwidth for $DVPN. In addition, the DVPN service allows resolution of Handshake (HNS) Top-Level-Domains, allowing your users to resolve the future.
-2. AKT - [Akash](https://akash.network/) ($AKT) is a decentralized server rental marketplace. Akash allows you to setup clusters of servers and rent them out, becoming a mini Amazon EC2.
-3. Sia - [SiaCoin](https://sia.tech/) ($SC) is a long established provider of distributed disk space. As a Sia Host, you rent out disk space and bandwidth for passive income.
 
 More of our tutorials and explainers about each service can be found on our [YouTube Channel](https://www.youtube.com/channel/UCo9mpJA4MHAf_iZYHDieADQ)
 
@@ -99,22 +108,12 @@ sudo apt install -y git curl jq build-essential curl openssl uidmap unzip libssl
 <a id="videos"></a>
 ### Video Tutorials
 
-[Sia Host Setup Video Tutorial](https://youtu.be/9x3CS6cd3jg)
-
 [DVPN Host Setup](https://youtu.be/5GxRoVDOFKE)
-
-[Akash Part 1, Hardware Setup](https://youtu.be/Jqg3z3PMOwI)
-
-[Akash Part 2, Software Setup](https://youtu.be/QV6qhjyQ6dc)
 
 <a id="hardware"></a>
 ### Rig Hardware Builds:
 
 We walk through each of the following builds within the Video Tutorials above.
-
-[HandyHost MasterNode Build Spreadsheet (20TB storage, hosts DVPN/SIA and manages your AKT Cluster)](https://docs.google.com/spreadsheets/d/1IzIiKbsBy_IblG-K99nxzjlg70b4_Yaxh5TJCbWzvjA/edit?usp=sharing)
-
-[HandyHost Akash Node Components Spreadsheet](https://docs.google.com/spreadsheets/d/1-WJb0tL7v__S62BDUu457A4yz9Y6U-nie95a_zF58kU/edit?usp=sharing)
 
 [HandyHost DVPN Raspberry Pi 4 Components Spreadsheet](https://docs.google.com/spreadsheets/d/1njYVqVFq7KoyKZ2XzWPTzy1W6zlTz84egL_EtIrTsqc/edit?usp=sharing)
 
