@@ -2,6 +2,19 @@
 
 Join the community on the [Telegram group](https://t.me/handycomm)
 
+### Installation
+```
+sudo apt update
+sudo apt upgrade
+sudo apt install make systemd-container
+git clone https://github.com/0xbas3d/HandyHost
+cd HandyHost
+bash installUbuntu.sh
+sudo ./localdev_bootstrap.sh
+# App accessible at http://localhost:8008
+# Logs available at /root/.HandyHost/localdev.log
+```
+
 **This is a fork of HandyHost currently maintained only for DVPN. For the original repo click [here](https://github.com/HandyOSS/HandyHost)**
 
 HandyHost is a modern cryptocurrency "mining" software which allows you to monetize off-the-shelf hardware for passive income all while providing real utility to users versus just minting monies. Currently there are 3 main distributed-web utility blockchains that we implement within HandyHost. 
